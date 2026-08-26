@@ -1,0 +1,18 @@
+packages:
+  - 'apps/*'
+  - 'packages/*'
+
+# Lifecycle scripts are blocked by default; these are the ones we trust to run.
+allowBuilds:
+  '@nestjs/core': true
+  '@parcel/watcher': true
+  '@prisma/client': true
+  '@prisma/engines': true
+  '@tailwindcss/oxide': true
+  esbuild: true
+  lmdb: true
+  msgpackr-extract: true
+  prisma: true
+  sharp: true
+  unrs-resolver: true
+  vue-demi: true

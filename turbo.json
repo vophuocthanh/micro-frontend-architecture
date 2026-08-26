@@ -1,0 +1,69 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": [
+    ".env",
+    "apps/*/.env",
+    "apps/*/.env.local"
+  ],
+  "tasks": {
+    "build": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "dist/**",
+        ".next/**",
+        "!.next/cache/**"
+      ]
+    },
+    "dev": {
+      "dependsOn": [
+        "^build"
+      ],
+      "cache": false,
+      "persistent": true
+    },
+    "lint": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "typecheck": {
+      "dependsOn": [
+        "^build"
+      ]
+    },
+    "test": {
+      "dependsOn": [
+        "^build"
+      ],
+      "outputs": [
+        "coverage/**"
+      ]
+    },
+    "clean": {
+      "cache": false
+    },
+    "e2e": {
+      "cache": false,
+      "persistent": false
+    },
+    "start": {
+      "dependsOn": [
+        "build"
+      ],
+      "cache": false,
+      "persistent": true
+    }
+  },
+  "globalEnv": [
+    "NODE_ENV",
+    "PORT",
+    "DATABASE_URL",
+    "AUTH_LOGIN_RATE_LIMIT",
+    "AUTH_LOGIN_RATE_TTL_MS",
+    "TRANSFER_RATE_LIMIT",
+    "TRANSFER_RATE_TTL_MS"
+  ]
+}

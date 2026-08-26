@@ -1,0 +1,19 @@
+/*
+ * Page-level styling for standalone mode only.
+ *
+ * Loaded by `main.tsx`, never by `mount.tsx`, so none of these global rules
+ * ship inside the federated remote — a remote that reset `body` would be
+ * restyling the shell and every sibling application.
+ */
+body {
+  margin: 0;
+  padding: 1.5rem;
+  background: #f1f5f9;
+  font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: #0f172a;
+}
+
+#dashboard-root {
+  max-width: 72rem;
+  margin: 0 auto;
+}

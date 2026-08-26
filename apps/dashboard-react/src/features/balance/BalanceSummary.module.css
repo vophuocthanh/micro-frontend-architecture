@@ -1,0 +1,92 @@
+.total {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  padding-bottom: 1rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.totalLabel {
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
+.totalValue {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  /* Tabular figures stop the amount from jittering as digits change. */
+  font-variant-numeric: tabular-nums;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.625rem 0.5rem;
+  font: inherit;
+  text-align: left;
+  background: none;
+  border: 0;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.account:hover {
+  background: #f8fafc;
+}
+
+.account:focus-visible {
+  outline: 2px solid #1d4ed8;
+  outline-offset: -2px;
+}
+
+.identity {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.nickname {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.number {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-variant-numeric: tabular-nums;
+}
+
+.amount {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.frozen {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #b45309;
+}

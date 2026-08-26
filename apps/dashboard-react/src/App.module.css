@@ -1,0 +1,35 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(19rem, 1fr));
+  gap: 1rem;
+  align-items: start;
+  container-type: inline-size;
+}
+
+/* The spending panel carries the chart, so it earns the full width once there
+   is room for two columns beside it. */
+.wide {
+  grid-column: 1 / -1;
+}
+
+@media (min-width: 60rem) {
+  .wide {
+    grid-column: span 2;
+  }
+}
+
+.denied {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.875rem;
+}
+
+.deniedTitle {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #0f172a;
+}

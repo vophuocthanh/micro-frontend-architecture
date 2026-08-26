@@ -1,0 +1,192 @@
+// Banking platform data model.
+//
+// Money is stored as Decimal(18,2) — the only type that represents currency
+// without rounding drift. It is converted to integer *minor units* at the API
+// boundary, because JSON has no decimal type and a float would reintroduce the
+// very drift the column avoids.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  CUSTOMER
+}
+
+enum Currency {
+  USD
+  EUR
+  VND
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  CREDIT
+}
+
+enum AccountStatus {
+  ACTIVE
+  FROZEN
+  CLOSED
+}
+
+enum TransactionDirection {
+  DEBIT
+  CREDIT
+}
+
+enum TransactionCategory {
+  GROCERIES
+  TRANSPORT
+  UTILITIES
+  ENTERTAINMENT
+  HEALTHCARE
+  SALARY
+  TRANSFER
+  OTHER
+}
+
+enum TransferStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  fullName     String
+  role         Role     @default(CUSTOMER)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  accounts      Account[]
+  beneficiaries Beneficiary[]
+  transfers     Transfer[]
+  refreshTokens RefreshToken[]
+
+  @@map("users")
+}
+
+/// One row per issued refresh token, storing only a SHA-256 digest.
+/// A stolen database therefore yields no usable session, and rotation is
+/// observable: reuse of a revoked token means the cookie leaked.
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       String
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  replacedById String?
+  userAgent    String?
+  ipAddress    String?
+  createdAt    DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@map("refresh_tokens")
+}
+
+model Account {
+  id            String        @id @default(cuid())
+  userId        String
+  accountNumber String        @unique
+  nickname      String
+  type          AccountType
+  status        AccountStatus @default(ACTIVE)
+  balance       Decimal       @default(0) @db.Decimal(18, 2)
+  /// Balance minus money already committed to pending transfers.
+  availableBalance Decimal    @default(0) @db.Decimal(18, 2)
+  currency      Currency      @default(USD)
+  openedAt      DateTime      @default(now())
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transactions    Transaction[]
+  outgoingTransfers Transfer[]  @relation("TransferSourceAccount")
+
+  @@index([userId, status])
+  @@map("accounts")
+}
+
+model Transaction {
+  id          String               @id @default(cuid())
+  accountId   String
+  direction   TransactionDirection
+  amount      Decimal              @db.Decimal(18, 2)
+  currency    Currency             @default(USD)
+  category    TransactionCategory  @default(OTHER)
+  description String
+  counterparty String
+  bookedAt    DateTime             @default(now())
+  transferId  String?
+
+  account  Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  transfer Transfer? @relation(fields: [transferId], references: [id])
+
+  // Every transaction list is "this account, newest first", optionally
+  // narrowed by category — this is the index that query rides on.
+  @@index([accountId, bookedAt(sort: Desc)])
+  @@index([accountId, category])
+  @@index([transferId])
+  @@map("transactions")
+}
+
+model Beneficiary {
+  id            String   @id @default(cuid())
+  userId        String
+  fullName      String
+  accountNumber String
+  bankName      String
+  currency      Currency @default(USD)
+  isFavourite   Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  transfers Transfer[]
+
+  @@unique([userId, accountNumber])
+  @@index([userId, isFavourite])
+  @@map("beneficiaries")
+}
+
+model Transfer {
+  id              String         @id @default(cuid())
+  reference       String         @unique
+  userId          String
+  sourceAccountId String
+  beneficiaryId   String
+  amount          Decimal        @db.Decimal(18, 2)
+  fee             Decimal        @default(0) @db.Decimal(18, 2)
+  currency        Currency       @default(USD)
+  note            String?
+  status          TransferStatus @default(PENDING)
+  failureReason   String?
+  /// Client-generated key that makes a retried submit safe to replay.
+  idempotencyKey  String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceAccount Account       @relation("TransferSourceAccount", fields: [sourceAccountId], references: [id])
+  beneficiary   Beneficiary   @relation(fields: [beneficiaryId], references: [id])
+  transactions  Transaction[]
+
+  @@unique([userId, idempotencyKey])
+  @@index([userId, createdAt(sort: Desc)])
+  @@index([sourceAccountId])
+  @@index([beneficiaryId])
+  @@map("transfers")
+}

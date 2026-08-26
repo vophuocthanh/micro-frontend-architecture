@@ -1,0 +1,24 @@
+%% What actually happens between a click on "Accounts" and a rendered Vue app.
+sequenceDiagram
+    autonumber
+    participant B as Browser
+    participant S as Shell
+    participant R as account remote (:3002)
+    participant A as API (:4000)
+
+    B->>S: GET /banking/accounts/acc_123
+    S->>S: findRemoteForPath() → account remote
+    S->>S: RemoteOutlet renders skeleton
+    S->>R: fetch remoteEntry.js (type: module)
+    R-->>S: container
+    S->>R: loadRemote('account/mount')
+    R-->>S: { mount, version }
+    S->>R: mount(element, MfeMountContext)
+    Note over S,R: context = auth · events · navigate · route · apiBaseUrl
+    R->>S: auth.getAccessToken()
+    S->>A: POST /auth/refresh (httpOnly cookie) — only if expired
+    A-->>S: access token
+    S-->>R: access token
+    R->>A: GET /accounts/acc_123 (Bearer)
+    A-->>R: account
+    R->>B: Vue app rendered

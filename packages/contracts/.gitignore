@@ -1,0 +1,6 @@
+# Dual ESM/CJS build output.
+/dist/
+
+# Tooling
+/.turbo/
+*.tsbuildinfo

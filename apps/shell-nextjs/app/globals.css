@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+/*
+ * The shell owns the global reset and the design tokens; remotes ship only
+ * component-scoped styles. Exactly one application resetting `body` is what
+ * keeps three independently built stylesheets from fighting over the page.
+ */
+@theme {
+  --font-sans: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+body {
+  background-color: var(--color-slate-100);
+  color: var(--color-slate-900);
+  font-family: var(--font-sans);
+}

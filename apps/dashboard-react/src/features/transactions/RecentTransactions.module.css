@@ -1,0 +1,55 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.row:last-child {
+  border-bottom: 0;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.counterparty {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.meta {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.amount {
+  font-size: 0.875rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.debit {
+  color: #0f172a;
+}
+
+.credit {
+  color: #047857;
+}

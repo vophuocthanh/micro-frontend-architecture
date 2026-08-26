@@ -1,0 +1,8 @@
+{
+  "extends": "@banking/config/typescript/library.json",
+  "compilerOptions": {
+    "outDir": "dist/esm",
+    "rootDir": "src"
+  },
+  "include": ["src"]
+}

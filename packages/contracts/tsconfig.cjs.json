@@ -1,0 +1,15 @@
+{
+  "extends": "@banking/config/typescript/library.json",
+  "compilerOptions": {
+    "outDir": "dist/cjs",
+    "rootDir": "src",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    // CommonJS emit and verbatim ESM syntax are mutually exclusive; the ESM
+    // build is the one that needs verbatim, so this one opts out.
+    "verbatimModuleSyntax": false,
+    "declaration": false,
+    "declarationMap": false
+  },
+  "include": ["src"]
+}

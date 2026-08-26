@@ -1,0 +1,34 @@
+{
+  "name": "banking-mfe",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Enterprise banking platform built as a micro frontend architecture.",
+  "packageManager": "pnpm@11.1.3",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:shell": "pnpm --filter @banking/shell-nextjs dev",
+    "dev:dashboard": "pnpm --filter @banking/dashboard-react dev",
+    "dev:account": "pnpm --filter @banking/account-vue dev",
+    "dev:transfer": "pnpm --filter @banking/transfer-angular dev",
+    "dev:api": "pnpm --filter @banking/api-nestjs dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "test:e2e": "pnpm --filter @banking/e2e-playwright e2e",
+    "db:migrate": "pnpm --filter @banking/api-nestjs db:migrate",
+    "db:seed": "pnpm --filter @banking/api-nestjs db:seed",
+    "db:reset": "pnpm --filter @banking/api-nestjs db:reset",
+    "db:studio": "pnpm --filter @banking/api-nestjs db:studio",
+    "db:generate": "pnpm --filter @banking/api-nestjs db:generate",
+    "clean": "turbo run clean && rm -rf node_modules .turbo"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  }
+}

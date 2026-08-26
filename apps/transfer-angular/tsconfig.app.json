@@ -1,0 +1,20 @@
+{
+  "extends": "@banking/config/typescript/dom.json",
+  "compilerOptions": {
+    // The shared browser config sets `noEmit`, which is right for Vite-bundled
+    // apps but wrong here: the Angular compiler *is* the emitter, and with
+    // `noEmit` it silently produces nothing at all.
+    "noEmit": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": false,
+    "useDefineForClassFields": false,
+    "types": ["vite/client"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
+  },
+  "angularCompilerOptions": {
+    "strictTemplates": true,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true
+  },
+  "include": ["src/**/*.ts"]
+}

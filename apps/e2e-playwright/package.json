@@ -1,0 +1,21 @@
+{
+  "name": "@banking/e2e-playwright",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Playwright tests that exercise the composed platform \u2014 the only place all five applications are verified together.",
+  "type": "module",
+  "scripts": {
+    "e2e": "playwright test",
+    "e2e:headed": "playwright test --headed",
+    "report": "playwright show-report",
+    "install:browsers": "playwright install chromium",
+    "lint": "eslint .",
+    "clean": "rm -rf test-results playwright-report"
+  },
+  "devDependencies": {
+    "@banking/config": "workspace:*",
+    "@playwright/test": "^1.49.1",
+    "eslint": "^9.17.0",
+    "typescript-eslint": "^8.18.1"
+  }
+}

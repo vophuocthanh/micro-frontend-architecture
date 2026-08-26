@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "display": "Publishable library",
+  "extends": "./base.json",
+  "compilerOptions": {
+    "lib": ["ES2022", "DOM"],
+    "declaration": true,
+    "declarationMap": true,
+    "verbatimModuleSyntax": true
+  }
+}

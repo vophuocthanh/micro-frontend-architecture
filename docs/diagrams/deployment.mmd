@@ -1,0 +1,19 @@
+%% Five pipelines, five artefacts, five release cadences.
+graph LR
+    subgraph "Independent pipelines"
+        P1[shell CI] --> D1[bank.example.com]
+        P2[dashboard CI] --> D2[dashboard.example.com]
+        P3[account CI] --> D3[account.example.com]
+        P4[transfer CI] --> D4[transfer.example.com]
+        P5[api CI] --> D5[api.example.com]
+    end
+
+    D1 -. "remoteEntry.js at runtime" .-> D2
+    D1 -. "remoteEntry.js at runtime" .-> D3
+    D1 -. "remoteEntry.js at runtime" .-> D4
+    D2 --> D5
+    D3 --> D5
+    D4 --> D5
+
+    style D1 fill:#dbeafe
+    style D5 fill:#dcfce7

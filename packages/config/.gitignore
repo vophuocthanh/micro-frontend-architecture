@@ -1,0 +1,3 @@
+# This package ships configuration files as-is — there is nothing to build.
+/.turbo/
+*.tsbuildinfo

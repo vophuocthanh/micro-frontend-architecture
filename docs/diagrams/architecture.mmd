@@ -1,0 +1,26 @@
+%% Platform topology. The shell is the only application the browser loads
+%% directly; everything else arrives at runtime or over HTTP.
+graph TD
+    User([User])
+
+    subgraph Browser
+        Shell["Next.js Shell :3000<br/>layout · nav · session · routing"]
+        Dashboard["React Dashboard :3001<br/>remote"]
+        Account["Vue Account :3002<br/>remote"]
+        Transfer["Angular Transfer :3003<br/>remote"]
+    end
+
+    API["NestJS API :4000<br/>auth · accounts · transactions<br/>beneficiaries · transfers"]
+    DB[("PostgreSQL<br/>Neon")]
+
+    User --> Shell
+    Shell -. "loadRemote() at runtime" .-> Dashboard
+    Shell -. "loadRemote() at runtime" .-> Account
+    Shell -. "loadRemote() at runtime" .-> Transfer
+
+    Dashboard -->|"Bearer token from shell"| API
+    Account -->|"Bearer token from shell"| API
+    Transfer -->|"Bearer token from shell"| API
+    Shell -->|"login / refresh / logout<br/>httpOnly cookie"| API
+
+    API --> DB

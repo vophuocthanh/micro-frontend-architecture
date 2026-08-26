@@ -1,0 +1,9 @@
+{
+  "extends": "@banking/config/typescript/dom.json",
+  "compilerOptions": {
+    "jsx": "preserve",
+    "types": ["vite/client"],
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo"
+  },
+  "include": ["src/**/*.ts", "src/**/*.vue", "src/**/*.d.ts"]
+}

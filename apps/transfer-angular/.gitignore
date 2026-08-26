@@ -1,0 +1,25 @@
+# Vite
+/dist/
+node_modules/.vite/
+
+# Tests
+/coverage/
+
+# Environment — only used when this remote runs standalone; inside the shell the
+# API base URL arrives through the mount context.
+.env
+.env.*
+!.env.example
+
+# Vite writes a transpiled copy of the config next to it while loading, and
+# Module Federation writes build diagnostics. Both embed absolute paths from the
+# machine that produced them.
+vite.config.*.timestamp-*
+/.mf/
+
+# Tooling
+/.turbo/
+*.tsbuildinfo
+
+# Angular
+/.angular/

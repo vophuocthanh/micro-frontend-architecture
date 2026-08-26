@@ -1,0 +1,47 @@
+# ── Workspace-wide ───────────────────────────────────────────────────────────
+# Each app also carries its own .gitignore. That duplication is deliberate: an
+# app is meant to be extractable into its own repository, and its ignore rules
+# should travel with it rather than being stranded here.
+
+node_modules/
+.turbo/
+*.tsbuildinfo
+
+# ── Secrets ──────────────────────────────────────────────────────────────────
+# The safety net. Real values live only on disk and in your deployment
+# platform's secret store; .env.example documents the shape and is committed.
+#
+# Patterns without a leading slash match at every depth, so this covers
+# apps/*/.env, apps/*/.env.local and anything added later.
+.env
+.env.*
+!.env.example
+
+# Certificates and keys, wherever they land.
+*.pem
+*.key
+*.p12
+*.pfx
+
+# ── Build output (per-app files repeat these; this is the backstop) ──────────
+dist/
+build/
+out/
+.next/
+coverage/
+
+# ── Editors and operating systems ────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# ── Logs ─────────────────────────────────────────────────────────────────────
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+
+.claude

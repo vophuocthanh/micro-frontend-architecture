@@ -1,0 +1,22 @@
+# Build output
+/dist/
+
+# Tests
+/coverage/
+
+# Environment — this is the file that holds DATABASE_URL and the two JWT
+# secrets. It must never be committed; .env.example documents every key.
+.env
+.env.*
+!.env.example
+
+# Prisma
+#
+# NOTE: prisma/migrations/ is deliberately NOT ignored. Migrations are source
+# code — they are how a database gets to a known state in CI and production, and
+# a repo without them cannot be deployed. Only generated client output is
+# excluded, and that lives in node_modules.
+
+# Tooling
+/.turbo/
+*.tsbuildinfo
