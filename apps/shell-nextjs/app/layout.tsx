@@ -39,7 +39,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
-      <body className="min-h-screen antialiased">
+      {/*
+        Browser extensions (password managers, ColorZilla, and friends) mutate
+        <body> before React hydrates, which reads as a mismatch React cannot
+        patch. Suppressing here covers that one element only; it does not hide
+        mismatches in anything rendered inside it.
+      */}
+      <body className="min-h-screen antialiased" suppressHydrationWarning>
         <ConfigProvider config={config}>
           <PlatformProvider>
             <AuthProvider>{children}</AuthProvider>

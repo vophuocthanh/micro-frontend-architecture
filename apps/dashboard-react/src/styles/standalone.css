@@ -1,16 +1,22 @@
 /*
  * Page-level styling for standalone mode only.
  *
- * Loaded by `main.tsx`, never by `mount.tsx`, so none of these global rules
- * ship inside the federated remote — a remote that reset `body` would be
- * restyling the shell and every sibling application.
+ * Loaded by `main.tsx`, never by `bootstrap.tsx`, so none of this ships inside
+ * the federated remote.
+ *
+ * This is where Tailwind's preflight lives. In the composed application the
+ * shell owns exactly one reset for the document and this remote inherits it;
+ * on its own port there is no shell, so the standalone entry supplies the reset
+ * itself. A remote that shipped preflight would be restyling the shell and both
+ * of its siblings.
  */
+@import 'tailwindcss/preflight.css' layer(base);
+
 body {
   margin: 0;
   padding: 1.5rem;
-  background: #f1f5f9;
+  background: oklch(0.968 0.007 247.896);
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  color: #0f172a;
 }
 
 #dashboard-root {

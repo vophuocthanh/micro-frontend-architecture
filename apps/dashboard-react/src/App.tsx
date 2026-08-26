@@ -1,4 +1,6 @@
-import styles from './App.module.css';
+import { ShieldAlert } from 'lucide-react';
+
+import { Card, CardContent } from '@/components/ui/card';
 import { usePlatformEvents } from './events/use-platform-events';
 import { BalanceSummary } from './features/balance/BalanceSummary';
 import { RecentTransactions } from './features/transactions/RecentTransactions';
@@ -18,20 +20,29 @@ export function App() {
   // a user without the permission regardless of what this component renders.
   if (!auth.hasPermission('VIEW_DASHBOARD')) {
     return (
-      <div className={styles.denied} role="status">
-        <p className={styles.deniedTitle}>Dashboard unavailable</p>
-        <p>Your role does not include access to the financial overview.</p>
-      </div>
+      <Card className="dash:mx-auto dash:max-w-xl">
+        <CardContent className="dash:flex dash:flex-col dash:items-center dash:gap-2 dash:py-10 dash:text-center">
+          <ShieldAlert className="dash:text-muted-foreground dash:size-6" aria-hidden="true" />
+          <p role="status" className="dash:font-semibold">
+            Dashboard unavailable
+          </p>
+          <p className="dash:text-muted-foreground dash:text-sm">
+            Your role does not include access to the financial overview.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className={styles.grid}>
-      <BalanceSummary />
-      <div className={styles.wide}>
+    <div className="dash:grid dash:items-start dash:gap-4 dash:lg:grid-cols-3">
+      <div className="dash:lg:col-span-2">
         <SpendingOverview />
       </div>
-      <RecentTransactions />
+      <BalanceSummary />
+      <div className="dash:lg:col-span-3">
+        <RecentTransactions />
+      </div>
     </div>
   );
 }

@@ -28,6 +28,7 @@ worth reading.
 | [005](../decisions/ADR-005-error-isolation.md) | Five remote states, not three |
 | [006](../decisions/ADR-006-shared-dependencies.md) | Share nothing — including React — and what that costs |
 | [007](../decisions/ADR-007-server-state.md) | Server state is a cache, not global state |
+| [008](../decisions/ADR-008-design-system.md) | shadcn/ui copied per application, and two Tailwind builds in one page |
 
 ## Diagrams
 

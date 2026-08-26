@@ -28,7 +28,9 @@ test('a transfer in the Angular remote refreshes the React remote', async ({ pag
   await expect(page.getByText('Transfer sent')).toBeVisible();
 
   // The Angular remote asked the shell for a toast; it owns no global UI.
-  await expect(page.locator('[aria-live="polite"]').filter({ hasText: 'Jordan Lee' })).toBeVisible();
+  // Asserted on the toast's own text rather than on its live-region wrapper,
+  // which the toast library keeps mounted and hidden between notifications.
+  await expect(page.getByText(/sent to Jordan Lee/)).toBeVisible();
 
   await page.getByRole('link', { name: 'Dashboard' }).click();
   const after = toNumber(await readTotalAssets(page));

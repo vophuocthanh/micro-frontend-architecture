@@ -1,6 +1,8 @@
+import { AlertTriangle, Inbox, RotateCw } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { ApiError } from '../services/api-client';
-import a11y from '../styles/a11y.module.css';
-import styles from './StatusBlock.module.css';
 
 interface LoadingBlockProps {
   /** How many shimmer rows to draw, matched to the content being replaced. */
@@ -10,11 +12,16 @@ interface LoadingBlockProps {
 
 export function LoadingBlock({ rows = 3, label }: LoadingBlockProps) {
   return (
-    <div className={styles.root} role="status" aria-live="polite" aria-busy="true">
+    <div
+      className="dash:space-y-3 dash:py-2"
+      role="status"
+      aria-live="polite"
+      aria-busy="true"
+    >
       {/* The visible skeleton is decorative; this is what a screen reader hears. */}
-      <span className={a11y.srOnly}>{label}</span>
+      <span className="dash:sr-only">{label}</span>
       {Array.from({ length: rows }, (_, index) => (
-        <span key={index} className={styles.skeleton} aria-hidden="true" />
+        <Skeleton key={index} className="dash:h-4 dash:w-full" />
       ))}
     </div>
   );
@@ -27,9 +34,10 @@ interface EmptyBlockProps {
 
 export function EmptyBlock({ title, description }: EmptyBlockProps) {
   return (
-    <div className={styles.root}>
-      <p className={styles.title}>{title}</p>
-      <p className={styles.description}>{description}</p>
+    <div className="dash:flex dash:flex-col dash:items-center dash:gap-2 dash:py-8 dash:text-center">
+      <Inbox className="dash:text-muted-foreground dash:size-5" aria-hidden="true" />
+      <p className="dash:text-sm dash:font-medium">{title}</p>
+      <p className="dash:text-muted-foreground dash:max-w-[34ch] dash:text-sm">{description}</p>
     </div>
   );
 }
@@ -43,14 +51,27 @@ export function ErrorBlock({ error, onRetry }: ErrorBlockProps) {
   const isApiError = error instanceof ApiError;
 
   return (
-    <div className={`${styles.root} ${styles.error}`} role="alert">
-      <p className={styles.title}>Could not load this section</p>
-      <p className={styles.description}>{describe(error)}</p>
+    <div
+      className="dash:flex dash:flex-col dash:items-center dash:gap-2 dash:py-8 dash:text-center"
+      role="alert"
+    >
+      <AlertTriangle className="dash:text-destructive dash:size-5" aria-hidden="true" />
+      <p className="dash:text-destructive dash:text-sm dash:font-medium">
+        Could not load this section
+      </p>
+      <p className="dash:text-muted-foreground dash:max-w-[34ch] dash:text-sm">{describe(error)}</p>
+
       {/* The correlation id turns "it broke" into a log line an engineer can find. */}
-      {isApiError && <span className={styles.requestId}>Request {error.requestId}</span>}
-      <button type="button" className={styles.retry} onClick={onRetry}>
+      {isApiError && (
+        <span className="dash:text-muted-foreground dash:font-mono dash:text-xs">
+          Request {error.requestId}
+        </span>
+      )}
+
+      <Button variant="outline" size="sm" className="dash:mt-2" onClick={onRetry}>
+        <RotateCw className="dash:size-3.5" aria-hidden="true" />
         Try again
-      </button>
+      </Button>
     </div>
   );
 }

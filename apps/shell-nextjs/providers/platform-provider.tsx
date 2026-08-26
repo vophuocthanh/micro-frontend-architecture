@@ -23,12 +23,6 @@ export function PlatformProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
 
-  // Kept in a ref so the subscription callbacks below always read the *current*
-  // path without the bus being rebuilt — and every remote remounted — on every
-  // navigation.
-  const pathnameRef = useRef(pathname);
-  pathnameRef.current = pathname;
-
   const listenersRef = useRef(new Set<(pathname: string) => void>());
 
   useEffect(() => {
@@ -48,7 +42,17 @@ export function PlatformProvider({ children }: { children: ReactNode }) {
       events,
       navigate,
       createRoute: (basePath) => ({
-        current: () => toSubPath(pathnameRef.current, basePath),
+        /**
+         * Read from the browser rather than from React state.
+         *
+         * `usePathname()` is a mirror of `window.location`, and mirrors lag: a
+         * remote that mounts in the same commit as a navigation would see the
+         * previous path, because child effects run before the parent's. The
+         * location itself is never stale, and it removes the need to hold the
+         * path in a ref — which React 19 rightly forbids writing during render.
+         */
+        current: () =>
+          typeof window === 'undefined' ? '/' : toSubPath(window.location.pathname, basePath),
         subscribe: (listener): Unsubscribe => {
           const wrapped = (nextPathname: string): void =>
             listener(toSubPath(nextPathname, basePath));

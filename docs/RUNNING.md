@@ -280,6 +280,13 @@ rm -rf apps/shell-nextjs/.next
 pnpm dev
 ```
 
+### Editing the React dashboard inside the shell does not hot-reload
+
+Expected. Fast Refresh is disabled when that remote is federated, because a
+Vite React remote cannot rely on a Next.js host installing its preamble — see
+[module-federation.md](./architecture/module-federation.md). Refresh the page,
+or work on that domain with `pnpm dev:dashboard`, where HMR is fully enabled.
+
 ### A remote builds to an empty chunk
 
 The framework compiler produced nothing, and federation is not to blame. The

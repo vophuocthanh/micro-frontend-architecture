@@ -1,28 +1,36 @@
 import type { ReactNode } from 'react';
 
-import styles from './Panel.module.css';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 interface PanelProps {
   title: string;
   hint?: string;
+  className?: string;
   children: ReactNode;
 }
 
 /**
- * The card shell every dashboard section sits in.
+ * The card every dashboard section sits in.
  *
- * `section` + a heading rather than a styled `div`: it gives the panel a place
- * in the document outline, so a screen reader user can jump between sections
- * instead of reading the page top to bottom.
+ * `aria-label` on the section is what lets a screen-reader user jump between
+ * areas of the dashboard instead of reading it top to bottom — and it is what
+ * the end-to-end tests target, so the structure is pinned by a test rather than
+ * by convention.
  */
-export function Panel({ title, hint, children }: PanelProps) {
+export function Panel({ title, hint, className, children }: PanelProps) {
   return (
-    <section className={styles.panel} aria-label={title}>
-      <header className={styles.header}>
-        <h3 className={styles.title}>{title}</h3>
-        {hint ? <span className={styles.hint}>{hint}</span> : null}
-      </header>
-      <div className={styles.body}>{children}</div>
+    // The landmark wraps the Card rather than replacing it: shadcn's Card is a
+    // plain div with no `asChild`, and a div with an aria-label is not a
+    // landmark a screen reader can navigate to.
+    <section aria-label={title} className={cn('dash:contents', className)}>
+      <Card className="dash:gap-4">
+        <CardHeader className="dash:gap-0">
+          <CardTitle className="dash:text-sm dash:font-medium">{title}</CardTitle>
+          {hint ? <span className="dash:text-muted-foreground dash:text-xs">{hint}</span> : null}
+        </CardHeader>
+        <CardContent>{children}</CardContent>
+      </Card>
     </section>
   );
 }

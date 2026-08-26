@@ -1,11 +1,20 @@
 import type { Account } from '@banking/contracts';
+import { ChevronRight, CreditCard, PiggyBank, Wallet } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { EmptyBlock, ErrorBlock, LoadingBlock } from '../../components/StatusBlock';
 import { Panel } from '../../components/Panel';
 import { useAccountSummary } from '../../hooks/use-dashboard-queries';
 import { useShell } from '../../shell/shell-context';
 import { formatMoney } from '../../utils/format';
-import styles from './BalanceSummary.module.css';
+
+const ACCOUNT_ICON: Record<Account['type'], LucideIcon> = {
+  CHECKING: Wallet,
+  SAVINGS: PiggyBank,
+  CREDIT: CreditCard,
+};
 
 /**
  * Total assets plus a per-account breakdown.
@@ -18,8 +27,21 @@ export function BalanceSummary() {
   const { events } = useShell();
   const { data, isPending, isError, error, refetch } = useAccountSummary();
 
-  if (isPending) return <Panel title="Total assets"><LoadingBlock label="Loading balances" rows={4} /></Panel>;
-  if (isError) return <Panel title="Total assets"><ErrorBlock error={error} onRetry={() => void refetch()} /></Panel>;
+  if (isPending) {
+    return (
+      <Panel title="Total assets">
+        <LoadingBlock label="Loading balances" rows={4} />
+      </Panel>
+    );
+  }
+
+  if (isError) {
+    return (
+      <Panel title="Total assets">
+        <ErrorBlock error={error} onRetry={() => void refetch()} />
+      </Panel>
+    );
+  }
 
   if (data.accounts.length === 0) {
     return (
@@ -42,30 +64,55 @@ export function BalanceSummary() {
 
   return (
     <Panel title="Total assets" hint={`${data.accountCount} accounts`}>
-      <div className={styles.total}>
-        <span className={styles.totalLabel}>Across all accounts</span>
-        <span className={styles.totalValue}>
-          {formatMoney(data.totalBalanceMinor, data.currency)}
-        </span>
-      </div>
+      <p className="dash:text-muted-foreground dash:text-xs">Across all accounts</p>
+      <p className="dash:mt-1 dash:text-3xl dash:font-semibold dash:tracking-tight dash:tabular-nums">
+        {formatMoney(data.totalBalanceMinor, data.currency)}
+      </p>
 
-      <ul className={styles.list}>
-        {data.accounts.map((account) => (
-          <li key={account.id}>
-            <button type="button" className={styles.account} onClick={() => handleSelect(account)}>
-              <span className={styles.identity}>
-                <span className={styles.nickname}>{account.nickname}</span>
-                <span className={styles.number}>{account.accountNumber}</span>
-              </span>
-              <span className={styles.amount}>
-                {account.status !== 'ACTIVE' ? (
-                  <span className={styles.frozen}>{account.status}</span>
-                ) : null}{' '}
-                {formatMoney(account.balanceMinor, account.currency)}
-              </span>
-            </button>
-          </li>
-        ))}
+      <Separator className="dash:my-4" />
+
+      <ul className="dash:space-y-1">
+        {data.accounts.map((account) => {
+          const Icon = ACCOUNT_ICON[account.type];
+
+          return (
+            <li key={account.id}>
+              <button
+                type="button"
+                onClick={() => handleSelect(account)}
+                className="dash:hover:bg-accent dash:focus-visible:ring-ring dash:flex dash:w-full dash:items-center dash:gap-3 dash:rounded-md dash:px-2 dash:py-2 dash:text-left dash:transition-colors dash:focus-visible:ring-2 dash:focus-visible:outline-none"
+              >
+                <span className="dash:bg-muted dash:text-muted-foreground dash:grid dash:size-8 dash:shrink-0 dash:place-items-center dash:rounded-md">
+                  <Icon className="dash:size-4" aria-hidden="true" />
+                </span>
+
+                <span className="dash:min-w-0 dash:flex-1">
+                  <span className="dash:block dash:truncate dash:text-sm dash:font-medium">
+                    {account.nickname}
+                  </span>
+                  <span className="dash:text-muted-foreground dash:block dash:text-xs dash:tabular-nums">
+                    {account.accountNumber}
+                  </span>
+                </span>
+
+                <span className="dash:flex dash:shrink-0 dash:items-center dash:gap-2">
+                  {account.status !== 'ACTIVE' && (
+                    <Badge variant="outline" className="dash:text-[10px]">
+                      {account.status}
+                    </Badge>
+                  )}
+                  <span className="dash:text-sm dash:font-medium dash:tabular-nums">
+                    {formatMoney(account.balanceMinor, account.currency)}
+                  </span>
+                  <ChevronRight
+                    className="dash:text-muted-foreground dash:size-4"
+                    aria-hidden="true"
+                  />
+                </span>
+              </button>
+            </li>
+          );
+        })}
       </ul>
     </Panel>
   );

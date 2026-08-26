@@ -1,6 +1,10 @@
 'use client';
 
+import { AlertTriangle } from 'lucide-react';
 import { Component, type ErrorInfo, type ReactNode } from 'react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 
 interface ErrorBoundaryProps {
   /** Named in the fallback so the user is told *which* area failed. */
@@ -42,20 +46,16 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
     }
 
     return (
-      <div
-        role="alert"
-        className="rounded-xl border border-red-200 bg-red-50 p-6 text-center text-sm text-red-900"
-      >
-        <p className="font-semibold">Something went wrong in {this.props.area}</p>
-        <p className="mt-1 text-red-800">{this.state.error.message}</p>
-        <button
-          type="button"
-          onClick={this.reset}
-          className="mt-4 rounded-lg border border-red-300 bg-white px-3 py-1.5 font-semibold text-red-700 hover:bg-red-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
-        >
-          Try again
-        </button>
-      </div>
+      <Alert variant="destructive" className="mx-auto max-w-xl">
+        <AlertTriangle className="size-4" aria-hidden="true" />
+        <AlertTitle>Something went wrong in {this.props.area}</AlertTitle>
+        <AlertDescription className="space-y-3">
+          <p>{this.state.error.message}</p>
+          <Button variant="outline" size="sm" onClick={this.reset}>
+            Try again
+          </Button>
+        </AlertDescription>
+      </Alert>
     );
   }
 }

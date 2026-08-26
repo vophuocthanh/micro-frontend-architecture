@@ -4,6 +4,7 @@ import { usePathname } from 'next/navigation';
 
 import { ErrorBoundary } from '@/components/error/error-boundary';
 import { RemoteOutlet } from '@/components/layout/remote-outlet';
+import { Card, CardContent } from '@/components/ui/card';
 import { findRemoteForPath } from '@/lib/config/runtime-config';
 import { useRuntimeConfig } from '@/providers/config-provider';
 
@@ -28,12 +29,15 @@ export default function BankingPage() {
 
   if (!remote) {
     return (
-      <div className="rounded-xl border border-slate-200 bg-white p-10 text-center">
-        <p className="text-lg font-semibold text-slate-900">Page not found</p>
-        <p className="mt-1 text-sm text-slate-600">
-          No application on this platform owns <code className="font-mono">{pathname}</code>.
-        </p>
-      </div>
+      <Card className="mx-auto max-w-xl">
+        <CardContent className="py-10 text-center">
+          <p className="text-lg font-semibold">Page not found</p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            No application on this platform owns{' '}
+            <code className="bg-muted rounded px-1 py-0.5 font-mono text-xs">{pathname}</code>.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 

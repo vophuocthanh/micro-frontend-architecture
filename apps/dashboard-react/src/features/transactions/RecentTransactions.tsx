@@ -2,7 +2,6 @@ import { EmptyBlock, ErrorBlock, LoadingBlock } from '../../components/StatusBlo
 import { Panel } from '../../components/Panel';
 import { useRecentTransactions } from '../../hooks/use-dashboard-queries';
 import { formatMoney, formatShortDate, humanise } from '../../utils/format';
-import styles from './RecentTransactions.module.css';
 
 const VISIBLE_COUNT = 8;
 
@@ -38,21 +37,33 @@ export function RecentTransactions() {
 
   return (
     <Panel title="Recent activity" hint={`Last ${data.length}`}>
-      <ul className={styles.list}>
+      <ul className="dash:divide-border dash:divide-y">
         {data.map((transaction) => {
           const isCredit = transaction.direction === 'CREDIT';
 
           return (
-            <li key={transaction.id} className={styles.row}>
-              <span className={styles.details}>
-                <span className={styles.counterparty}>{transaction.counterparty}</span>
-                <span className={styles.meta}>
+            <li
+              key={transaction.id}
+              className="dash:flex dash:items-center dash:justify-between dash:gap-3 dash:py-2.5"
+            >
+              <span className="dash:min-w-0">
+                <span className="dash:block dash:truncate dash:text-sm dash:font-medium">
+                  {transaction.counterparty}
+                </span>
+                <span className="dash:text-muted-foreground dash:block dash:text-xs">
                   {humanise(transaction.category)} · {formatShortDate(transaction.bookedAt)}
                 </span>
               </span>
-              <span className={`${styles.amount} ${isCredit ? styles.credit : styles.debit}`}>
-                {/* The sign carries the meaning for anyone who cannot rely on the
-                    green/black distinction alone. */}
+
+              <span
+                className={
+                  isCredit
+                    ? 'dash:shrink-0 dash:text-sm dash:font-medium dash:tabular-nums dash:text-emerald-600'
+                    : 'dash:shrink-0 dash:text-sm dash:font-medium dash:tabular-nums'
+                }
+              >
+                {/* The sign carries the meaning for anyone who cannot rely on
+                    the colour distinction alone. */}
                 {isCredit ? '+' : '−'}
                 {formatMoney(transaction.amountMinor, transaction.currency)}
               </span>

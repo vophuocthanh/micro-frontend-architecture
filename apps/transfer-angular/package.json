@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 3003 --strictPort",
-    "build": "tsc -b --noEmit && vite build",
+    "build": "tsc --noEmit -p tsconfig.app.json && node scripts/build-remote.mjs",
     "start": "vite preview --port 3003 --strictPort",
     "lint": "eslint src",
     "typecheck": "tsc -b --noEmit",

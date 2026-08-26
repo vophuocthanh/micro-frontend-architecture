@@ -50,7 +50,35 @@ because Next.js pins a canary React (`19.2.0-canary-…`) that no ordinary
 
 **Why it is confusing.** It presents as a federation bug and is a semver bug.
 
-### An exposed module builds to an empty chunk
+### An exposed module builds to an empty chunk — intermittently
+
+**Symptom.** The build exits 0. `dist/assets/mount-*.js` is 1 byte, the
+framework chunk is missing entirely, and the shell reports `invalid-contract`
+when it tries to mount the remote. Re-running the same build usually succeeds.
+
+**Cause.** A race between the Vite Module Federation plugin's module tracking
+and Angular's compiler: roughly one run in four the entire application graph is
+dropped from the output. It is upstream of this repository.
+
+**What is done about it.** Two things, because the failure is silent and lands
+far from its cause:
+
+1. Every remote runs `scripts/verify-remote-entry.mjs` after `vite build`. It
+   fails the build when the exposed chunk is a stub or the framework was not
+   bundled — turning a runtime mystery in a browser into a red build in the
+   repository that caused it.
+2. The Angular remote's build wraps that in `scripts/build-remote.mjs`, which
+   retries **once** on a verified-hollow output and then fails for real. A
+   bounded retry is defensible here precisely because the bad state is detected
+   rather than guessed at; the retry announces itself in the log.
+
+Six consecutive clean builds: five clean, one recovered by the retry.
+
+**Why it is confusing.** A successful exit code and a plausible-looking `dist`.
+Without the verifier the first symptom is a user seeing "Failed to load
+transfer" against a build that CI declared green.
+
+### An exposed module builds to an empty chunk (deterministically)
 
 **Symptom.** The build succeeds. `dist/assets/mount-*.js` is `0.00 kB`, and the
 remote mounts nothing.
@@ -90,6 +118,36 @@ reachable from outside.
 
 **Why it is confusing.** It is intermittent, and the error names a file whose
 export is plainly right there in the source.
+
+### `@vitejs/plugin-react can't detect preamble` — only inside the shell
+
+**Symptom.** The React remote works perfectly on its own port and fails to mount
+inside the shell, with that message shown in the outlet's error state. Vue and
+Angular are unaffected.
+
+**Cause.** In development `@vitejs/plugin-react` prepends a guard to every
+component module that requires `window.$RefreshReg$` to exist. The plugin
+defines it by injecting a preamble into the `index.html` *it* serves. When the
+shell mounts the remote, the page belongs to Next.js — which installs its own,
+different, refresh runtime — so the guard throws before anything renders.
+
+**Fix.** Disable Fast Refresh when the remote is being consumed by the shell:
+
+```ts
+// apps/dashboard-react/vite.config.ts
+server: { hmr: !process.env.MFE_FEDERATED }
+```
+
+`pnpm dev` sets `MFE_FEDERATED=1`; `pnpm dev:dashboard` does not, so the
+standalone fast loop keeps full HMR.
+
+The alternative — teaching the shell to install a Vite React preamble — would
+work and was rejected: the host would have to know that one particular remote is
+a Vite React application, which is exactly the knowledge the mount contract
+exists to remove. The remote owning its own constraint is the cheaper coupling.
+
+**Why it is confusing.** It only reproduces in the composed application, so the
+remote's own dev server gives a clean bill of health.
 
 ### A remote loads but the shell reports `invalid-contract`
 

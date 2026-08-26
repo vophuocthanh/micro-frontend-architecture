@@ -20,8 +20,8 @@ recorded rather than tidied away.
 
 | | |
 |---|---|
-| **Shell** | Next.js 15 (App Router) · React 19 · Tailwind CSS 4 · port 3000 |
-| **Dashboard** | React 19 · Vite 6 · TanStack Query · port 3001 |
+| **Shell** | Next.js 16 (App Router, Turbopack) · React 19 · Tailwind 4 + shadcn/ui · port 3000 |
+| **Dashboard** | React 19 · Vite 6 · TanStack Query · Tailwind 4 + shadcn/ui · port 3001 |
 | **Account** | Vue 3.5 · Vite 6 · Pinia · Vue Query · port 3002 |
 | **Transfer** | Angular 20 (zoneless) · Vite + Analog · RxJS · port 3003 |
 | **API** | NestJS 11 · Prisma 6 · PostgreSQL (Neon) · port 4000 |
@@ -143,9 +143,10 @@ name would be a lie waiting to happen.
 **What is deliberately *not* shared:**
 
 - **No shared UI package.** Three frameworks cannot share components, and a
-  package that could would force all three to release together. Visual
-  consistency comes from the shell owning the chrome and from shared design
-  tokens — not from shared code.
+  package that could would force all three to release together. The shell and
+  the React remote both use shadcn/ui, whose components are *copied into* each
+  repository rather than imported — so they share a design language and no
+  release cadence. See [ADR-008](./docs/decisions/ADR-008-design-system.md).
 - **No shared HTTP client.** Each remote has its own ~40-line `fetch` wrapper
   (Angular uses `HttpClient` because that is idiomatic there). Extracting it
   would couple three release cadences to save forty lines. The *contract* is
@@ -219,6 +220,11 @@ All of these were found by running the thing, not by reading docs
    routes into a module the plugin is rewriting is a race, and it fails
    *intermittently* with `"mount" is not exported by "src/mount.ts"`. Each remote
    therefore has a `bootstrap.ts` that both `mount.ts` and `main.ts` depend on.
+
+4. **A Vite React remote cannot use Fast Refresh inside a non-Vite host.** The
+   plugin injects a preamble into *its own* `index.html`; loaded by the Next.js
+   shell there is no preamble and the remote throws before rendering. Refresh is
+   therefore disabled when — and only when — the remote is federated.
 
 ---
 
@@ -363,20 +369,47 @@ would survive a logout and briefly show one user another user's balances.
 
 ## 11. CSS isolation
 
-Each remote uses its framework's own mechanism, all enforced by a compiler rather
-than by convention:
+Each application uses a different mechanism, and all of them are enforced by a
+compiler rather than by a naming convention:
 
 | Application | Mechanism |
 |---|---|
-| Shell | Tailwind CSS — and the **only** application that resets `body` |
-| Dashboard (React) | CSS Modules — `.root` becomes `_root_1f2x3_1` |
+| Shell | Tailwind 4 + shadcn/ui — and the **only** application that resets `body` or writes `:root` |
+| Dashboard (React) | Tailwind 4 with `prefix(dash)` + shadcn/ui, tokens scoped to its mount root |
 | Account (Vue) | `<style scoped>` — per-component data attributes |
 | Transfer (Angular) | Emulated view encapsulation — the framework default |
 
+### Two Tailwind builds in one page
+
+The shell and the React remote both use Tailwind and shadcn/ui, are built
+separately, and are deployed separately. Three things keep them from colliding:
+
+1. **`prefix(dash)` in the remote.** Every utility becomes `dash:flex`, and every
+   Tailwind theme variable becomes `--dash-*`. Without it the two builds would
+   share `.p-4` and `--spacing`, and a version drift between them would silently
+   change the other application's spacing.
+2. **The remote never imports preflight.** Preflight resets `*`, `body` and every
+   element — exactly what a remote must not ship. The shell applies its own
+   document-wide, and the remote's DOM is in that same document, so shadcn
+   components get the reset they need without the remote providing it.
+   `standalone.css` supplies it on port 3001, where there is no shell.
+3. **The remote's shadcn tokens live on `.banking-dashboard`, not `:root`.**
+   `--background`, `--primary` and the rest are defined on the mount root. A
+   remote defining them at `:root` would repaint the shell and its siblings,
+   with whichever stylesheet loaded last winning.
+
+Verifiable on the built stylesheet:
+
+```bash
+pnpm --filter @banking/dashboard-react build
+CSS=$(ls apps/dashboard-react/dist/assets/bootstrap-*.css)
+grep -c 'body{' "$CSS"      # 0 — no document reset
+grep -o ':root' "$CSS"      # one block, and every variable in it is --dash-*
+```
+
 Global page styles live in each remote's `styles/standalone.css`, imported only
-by `main.ts` and **never** by `mount.ts` — so nothing global travels with the
-federated remote. A remote that reset `body` would be restyling the shell and its
-two siblings.
+by `main.ts` and **never** by `bootstrap.ts` — so nothing global travels with the
+federated remote.
 
 ---
 
@@ -629,4 +662,18 @@ To understand the architecture, in this order:
 3. [`apps/shell-nextjs/components/layout/remote-outlet.tsx`](./apps/shell-nextjs/components/layout/remote-outlet.tsx) — the entire integration surface
 4. [`apps/shell-nextjs/lib/federation/runtime.ts`](./apps/shell-nextjs/lib/federation/runtime.ts) — host registration, and why nothing is shared
 5. [`apps/transfer-angular/src/app/core/shell-location.strategy.ts`](./apps/transfer-angular/src/app/core/shell-location.strategy.ts) — embedding a framework router in a host-owned URL
-6. [`docs/decisions/`](./docs/decisions) — the seven ADRs, in order
+6. [`docs/decisions/`](./docs/decisions) — the eight ADRs, in order
+
+---
+
+## 21. Contributing
+
+Bug reports, ideas and pull requests are welcome — start with
+[`CONTRIBUTING.md`](./CONTRIBUTING.md), which covers the setup, the boundaries a
+review will hold you to, the quality gates, and when a change needs an ADR.
+
+---
+
+## 22. License
+
+[MIT](./LICENSE) © Vo Phuoc Thanh

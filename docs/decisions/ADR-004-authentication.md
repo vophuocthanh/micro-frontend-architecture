@@ -66,12 +66,16 @@ platform's own theft detection.
 is a bug that does not exist in a monolith and is easy to miss until three
 applications race.
 
-## Why there is no middleware auth check
+## Why there is no auth check in `proxy.ts`
 
 The refresh cookie belongs to the **API's** origin, so it is never sent to the
-shell's server and Next.js middleware cannot see it. A middleware gate would
-therefore always fail. Authentication is enforced where the evidence actually
-is: in the browser by `AuthProvider`, and on every request by the API.
+shell's server and the proxy cannot see it. A gate there would therefore always
+fail. Authentication is enforced where the evidence actually is: in the browser
+by `AuthProvider`, and on every request by the API.
+
+(`proxy.ts` is Next.js 16's replacement for `middleware.ts` — same position in
+the request pipeline, new file name, and a default export rather than a named
+`middleware` one.)
 
 ## Consequences
 

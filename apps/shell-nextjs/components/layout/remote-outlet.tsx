@@ -3,8 +3,11 @@
 import type { MfeMountContext, MfeUnmount, RemoteDefinition } from '@banking/contracts';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
+import { ShieldAlert } from 'lucide-react';
+
 import { RemoteError } from '@/components/error/remote-error';
 import { RemoteSkeleton } from '@/components/loading/remote-skeleton';
+import { Card, CardContent } from '@/components/ui/card';
 import { sessionStore } from '@/lib/auth/session-store';
 import { loadRemoteModule } from '@/lib/federation/runtime';
 import { useAuth } from '@/providers/auth-provider';
@@ -96,16 +99,18 @@ export function RemoteOutlet({ remote }: RemoteOutletProps) {
 
   if (!hasPermission(remote.requiredPermission)) {
     return (
-      <div
-        role="status"
-        className="rounded-xl border border-slate-200 bg-white p-8 text-center text-sm text-slate-600"
-      >
-        <p className="text-base font-semibold text-slate-900">Not available for your role</p>
-        <p className="mt-1">
-          You need the {remote.requiredPermission.replace(/_/g, ' ').toLowerCase()} permission to
-          open this area.
-        </p>
-      </div>
+      <Card className="mx-auto max-w-xl">
+        <CardContent className="flex flex-col items-center gap-2 py-10 text-center">
+          <ShieldAlert className="text-muted-foreground size-6" aria-hidden="true" />
+          <p role="status" className="text-base font-semibold">
+            Not available for your role
+          </p>
+          <p className="text-muted-foreground text-sm">
+            You need the {remote.requiredPermission.replace(/_/g, ' ').toLowerCase()} permission to
+            open this area.
+          </p>
+        </CardContent>
+      </Card>
     );
   }
 

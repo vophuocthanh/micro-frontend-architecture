@@ -1,5 +1,7 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
+
 import { AppHeader } from '@/components/layout/app-header';
 import { NotificationHost } from '@/components/layout/notification-host';
 import { useAuth } from '@/providers/auth-provider';
@@ -17,13 +19,16 @@ export default function BankingLayout({ children }: { children: React.ReactNode 
   if (status !== 'authenticated') {
     return (
       <div className="grid min-h-screen place-items-center" role="status" aria-live="polite">
-        <p className="text-sm text-slate-500">Restoring your session…</p>
+        <p className="text-muted-foreground flex items-center gap-2 text-sm">
+          <Loader2 className="size-4 animate-spin" aria-hidden="true" />
+          Restoring your session…
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen">
+    <div className="bg-muted/30 min-h-screen">
       <AppHeader />
       <main className="mx-auto max-w-6xl px-4 py-6">{children}</main>
       <NotificationHost />

@@ -22,6 +22,11 @@ export default defineConfig({
         './mount': './src/mount.ts',
       },
       dts: false,
+      // Generous, because the default 10s is measured against *machine load*,
+      // not project size: five packages building in parallel is enough to stall
+      // this one past the limit, and the plugin then emits an empty chunk from a
+      // build that still reports success.
+      moduleParseIdleTimeout: 60,
       shared: {},
     }),
   ],

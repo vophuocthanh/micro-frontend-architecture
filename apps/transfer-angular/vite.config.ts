@@ -26,6 +26,17 @@ export default defineConfig(({ mode }) => ({
         './mount': './src/mount.ts',
       },
       dts: false,
+      /**
+       * The plugin gives up waiting for module activity after 10s by default
+       * and force-resolves the graph. Compiling Angular is slow enough that a
+       * loaded machine — `turbo` building five packages at once, say — crosses
+       * that line, and the exposed module then emits as an **empty chunk**.
+       *
+       * The build still succeeds. The failure only appears in a browser, as the
+       * shell reporting `invalid-contract`, which is a long way from the cause.
+       * `verify-remote-entry.mjs` closes that gap; this stops it happening.
+       */
+      moduleParseIdleTimeout: 60,
       // Angular is bundled, never shared: the host is a React application, so
       // there is no second Angular instance to deduplicate against.
       shared: {},

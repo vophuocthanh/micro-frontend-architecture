@@ -18,11 +18,14 @@ test.describe('runtime composition', () => {
     const total = await readTotalAssets(page);
     expect(total).toMatch(/^\$[\d,]+\.\d{2}$/);
 
-    // The chart is drawn from the spending overview endpoint; bars only exist
-    // if six months of real transactions came back.
-    const bars = page.locator('section[aria-label="Spending overview"] svg rect');
-    await expect(bars.first()).toBeVisible();
-    expect(await bars.count()).toBeGreaterThanOrEqual(6);
+    // The chart is drawn from the spending overview endpoint, so a full set of
+    // month columns only exists if six months of real transactions came back.
+    // Asserted through the chart's accessible caption rather than its markup:
+    // that is the contract with a screen-reader user, and it survives the chart
+    // being redrawn with different elements.
+    const chart = page.getByRole('region', { name: 'Spending overview' }).locator('figure');
+    await expect(chart).toBeVisible();
+    await expect(chart.locator('figcaption li')).toHaveCount(6);
   });
 
   test('the Vue remote takes over the accounts section', async ({ page }) => {

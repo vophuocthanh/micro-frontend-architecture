@@ -1,3 +1,7 @@
+import { AlertTriangle, RotateCw } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { RemoteLoadError } from '@/lib/federation/runtime';
 
 interface RemoteErrorProps {
@@ -9,34 +13,31 @@ interface RemoteErrorProps {
 /**
  * What the user sees when one remote cannot be loaded.
  *
- * The rest of the platform keeps working: the navigation, the session and the
- * other two applications are untouched, because this failure is scoped to one
- * outlet. That is the promise of error isolation made visible.
+ * The rest of the platform keeps working: navigation, the session and the other
+ * two applications are untouched, because this failure is scoped to one outlet.
+ * That is error isolation made visible.
  */
 export function RemoteError({ remoteId, error, onRetry }: RemoteErrorProps) {
   const reason = error instanceof RemoteLoadError ? error.reason : 'unavailable';
 
   return (
-    <div
-      role="alert"
-      className="rounded-xl border border-amber-200 bg-amber-50 p-8 text-center text-sm text-amber-900"
-    >
-      <p className="text-base font-semibold">Failed to load {remoteId}</p>
-      <p className="mx-auto mt-2 max-w-md text-amber-800">{describe(reason)}</p>
-      <p className="mt-2 font-mono text-xs text-amber-700">{error.message}</p>
+    <Alert className="mx-auto max-w-xl">
+      <AlertTriangle className="size-4" aria-hidden="true" />
+      <AlertTitle>Failed to load {remoteId}</AlertTitle>
+      <AlertDescription className="space-y-3">
+        <p>{describe(reason)}</p>
+        <p className="text-muted-foreground font-mono text-xs break-all">{error.message}</p>
 
-      <button
-        type="button"
-        onClick={onRetry}
-        className="mt-5 rounded-lg border border-amber-300 bg-white px-4 py-2 font-semibold text-amber-900 hover:bg-amber-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-600"
-      >
-        Retry
-      </button>
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          <RotateCw className="size-3.5" aria-hidden="true" />
+          Retry
+        </Button>
 
-      <p className="mt-4 text-xs text-amber-700">
-        Other areas of the platform are unaffected and remain available.
-      </p>
-    </div>
+        <p className="text-muted-foreground text-xs">
+          Other areas of the platform are unaffected and remain available.
+        </p>
+      </AlertDescription>
+    </Alert>
   );
 }
 

@@ -19,7 +19,10 @@ export async function signIn(page: Page, email: string): Promise<void> {
 
 /** The formatted total the Dashboard renders, e.g. `$33,098.75`. */
 export async function readTotalAssets(page: Page): Promise<string> {
-  const panel = page.locator('section[aria-label="Total assets"]');
+  // Queried by accessible name rather than by tag: the panel is a labelled
+  // region, and which element carries that role is the component library's
+  // business, not the test's.
+  const panel = page.getByRole('region', { name: 'Total assets' });
   await panel.getByText('Across all accounts').waitFor();
   return panel.locator('text=/^\\$/').first().innerText();
 }

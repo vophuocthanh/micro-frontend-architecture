@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { App } from './App';
 import { ApiError } from './services/api-client';
 import { ShellProvider } from './shell/shell-context';
+import './styles/dashboard.css';
 
 /**
  * Starts the React application inside an element the caller owns.
@@ -27,7 +28,14 @@ export function bootstrapDashboard(
     <StrictMode>
       <QueryClientProvider client={queryClient}>
         <ShellProvider context={context}>
-          <App />
+          {/*
+            Every semantic token this remote uses is defined on this class
+            rather than on `:root`, so the remote cannot repaint the shell by
+            declaring a variable of the same name. See styles/dashboard.css.
+          */}
+          <div className="banking-dashboard">
+            <App />
+          </div>
         </ShellProvider>
       </QueryClientProvider>
     </StrictMode>,
