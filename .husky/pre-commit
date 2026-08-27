@@ -1,0 +1,4 @@
+# Staged files only. `pnpm lint` walks every package and takes minutes; a
+# pre-commit hook that slow gets bypassed with --no-verify, which is worse than
+# not having one. lint-staged passes ESLint the paths you actually changed.
+pnpm exec lint-staged

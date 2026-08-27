@@ -9,6 +9,7 @@
     "node": ">=22"
   },
   "scripts": {
+    "prepare": "husky",
     "dev": "cross-env MFE_FEDERATED=1 turbo run dev",
     "dev:shell": "pnpm --filter @banking/shell-nextjs dev",
     "dev:dashboard": "pnpm --filter @banking/dashboard-react dev",
@@ -18,6 +19,7 @@
     "build": "turbo run build",
     "start": "turbo run start",
     "lint": "turbo run lint",
+    "lint:staged": "lint-staged",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:e2e": "pnpm --filter @banking/e2e-playwright e2e",
@@ -29,8 +31,12 @@
     "clean": "turbo run clean && rm -rf node_modules .turbo"
   },
   "devDependencies": {
+    "@commitlint/cli": "^21.2.2",
+    "@commitlint/config-conventional": "^21.2.2",
     "cross-env": "7.0.3",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.3.0",
     "turbo": "2.3.3",
-    "typescript": "5.7.2"
+    "typescript": "5.9.3"
   }
 }

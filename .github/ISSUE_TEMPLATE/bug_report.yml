@@ -1,0 +1,106 @@
+name: Bug report
+description: Something in the platform behaves differently from what it promises.
+title: '[bug]: '
+labels: ['bug', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing this. Six packages compose into one page at runtime,
+        so *which applications were running* is often the difference between a
+        one-line fix and an afternoon of guessing. Please fill in that section
+        even when the bug looks confined to a single screen.
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+      description: The behaviour the application promises.
+      placeholder: Opening a saved deep link after the token refreshes should land on the same page.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: What happened instead
+      description: Include the exact error text if there is one.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: Numbered, starting from a freshly seeded database if that matters.
+      placeholder: |
+        1. `pnpm db:reset && pnpm db:seed`
+        2. `pnpm dev`
+        3. Sign in as the seeded analyst account
+        4. Open /banking/transfers, wait for the access token to expire
+        5. Reload
+    validations:
+      required: true
+
+  - type: input
+    id: request-id
+    attributes:
+      label: requestId
+      description: >
+        Every error response carries one and the UI shows it — it is what finds
+        the log line. Leave blank if the failure produced no error response.
+      placeholder: req_01JQ8F3M2K7X…
+
+  - type: checkboxes
+    id: applications
+    attributes:
+      label: Which applications were running
+      options:
+        - label: '`apps/shell-nextjs` (:3000)'
+        - label: '`apps/dashboard-react` (:3001)'
+        - label: '`apps/account-vue` (:3002)'
+        - label: '`apps/transfer-angular` (:3003)'
+        - label: '`apps/api-nestjs`'
+
+  - type: dropdown
+    id: mode
+    attributes:
+      label: How were they started
+      description: >
+        Federated composition and standalone development fail in different ways;
+        a bug that only appears in one of them is a strong clue.
+      options:
+        - pnpm dev (federated, MFE_FEDERATED=1)
+        - pnpm start (built output)
+        - A single remote standalone (pnpm dev:dashboard, dev:account, …)
+        - Deployed environment
+    validations:
+      required: true
+
+  - type: textarea
+    id: console
+    attributes:
+      label: Browser console and server output
+      description: >
+        Paste the relevant lines. A remote that fails to load usually says so in
+        the console before the UI shows anything.
+      render: text
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      value: |
+        - OS:
+        - Browser and version:
+        - Node (`node -v`):
+        - pnpm (`pnpm -v`):
+        - Commit or branch:
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Screenshots, a failing test, a suspected cause, when it last worked.

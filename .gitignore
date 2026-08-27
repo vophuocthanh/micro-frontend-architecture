@@ -30,6 +30,11 @@ out/
 .next/
 coverage/
 
+# Module Federation scratch directory. The Vite plugin writes it next to the
+# remote it is building and does not clean it up, so it reappears on every
+# `pnpm dev`.
+.__mf__temp/
+
 # ── Editors and operating systems ────────────────────────────────────────────
 .DS_Store
 Thumbs.db

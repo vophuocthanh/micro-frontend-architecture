@@ -1,0 +1,87 @@
+name: Feature request
+description: Propose a user-facing capability the platform does not have yet.
+title: '[feat]: '
+labels: ['enhancement', 'needs-triage']
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the outcome for the person using the bank, and which
+        application should own it, **before** proposing an implementation. If it
+        needs a new cross-application event or a change to the mount contract,
+        expect the discussion to start there — see CONTRIBUTING.md §8.
+
+  - type: textarea
+    id: outcome
+    attributes:
+      label: The user-facing outcome
+      description: Who is it for, and what can they do afterwards that they cannot do today.
+      placeholder: >
+        As someone reviewing last month's spending, I want to see how each
+        category moved against the previous month, so that an unusual increase
+        is visible without exporting anything.
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: The problem today
+      description: What people do instead right now, and why that falls short.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: owner
+    attributes:
+      label: Which application should own it
+      description: >
+        The shell owns no business logic. If a balance, a payee or a transfer
+        rule would end up in `apps/shell-nextjs`, it belongs somewhere else.
+      options:
+        - apps/shell-nextjs — layout, navigation, session, routing
+        - apps/dashboard-react — balances, spending, transactions
+        - apps/account-vue — profile, account settings
+        - apps/transfer-angular — money movement, payees
+        - apps/api-nestjs — data, business rules, authorization
+        - packages/contracts — types, RBAC, events, the mount contract
+        - Not sure — needs discussion
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: boundary
+    attributes:
+      label: Does it cross a boundary
+      description: Tick anything that applies. Any tick means the design is discussed before implementation.
+      options:
+        - label: Needs a new or changed event in `packages/contracts/src/events.ts`
+        - label: Changes the mount contract between the shell and a remote
+        - label: Needs new or changed API endpoints
+        - label: Changes RBAC or who can see what
+        - label: Needs a database migration
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      description: What has to be true for this to be done, including the states that are not the happy path.
+      value: |
+        - [ ] 
+        - [ ] Empty state:
+        - [ ] Error state:
+        - [ ] Keyboard reachable and labelled
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Including doing nothing, and why that is not enough.
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Mockups, prior art, related issues or ADRs.

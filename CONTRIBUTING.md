@@ -39,6 +39,9 @@ pnpm dev
 use `pnpm dev:shell`, `dev:dashboard`, `dev:account`, `dev:transfer` or
 `dev:api` — see [`docs/RUNNING.md`](./docs/RUNNING.md) §3b.
 
+`pnpm install` also installs the Git hooks (via husky's `prepare` script). You
+do not need to run anything else for §3 and §6 to start applying.
+
 ---
 
 ## 2. Where your change belongs
@@ -90,6 +93,15 @@ pnpm test:e2e
 The e2e suite deliberately does not start the applications itself — booting them
 from inside the runner would hide exactly the composition failures the suite
 exists to catch.
+
+**The pre-commit hook is not one of these gates.** It runs ESLint over the files
+you staged and nothing else — six packages linted on every commit would take
+minutes, and a hook that slow gets bypassed with `--no-verify`, which is worse
+than not having one. Each application carries its own `.lintstagedrc.mjs` so
+that lint-staged runs ESLint from that application's directory, against that
+application's flat config. `pnpm lint` over the whole repository is still what
+has to pass before you open a pull request; the hook only catches the obvious
+half a few minutes earlier.
 
 **What needs a test:**
 
@@ -149,7 +161,16 @@ test(e2e): cover transfer failure across the shell boundary
 chore(deps): bump turbo to 2.3.3
 ```
 
+The `commit-msg` hook checks this with
+[commitlint](https://commitlint.js.org). The permitted scopes are listed in
+[`commitlint.config.mjs`](./commitlint.config.mjs) — one per workspace package,
+plus `adr`, `docs`, `deps`, `ci`, `repo` and `release`. A new package needs a
+scope added there, or every commit touching it is rejected.
+
 Branch off `dev`, and open your pull request against `dev`.
+
+The pull request template asks the questions below; fill it in rather than
+deleting it.
 
 A pull request should say:
 
@@ -174,6 +195,10 @@ history second.
 ---
 
 ## 8. Reporting bugs and proposing features
+
+Both have an issue form under
+[`.github/ISSUE_TEMPLATE/`](./.github/ISSUE_TEMPLATE) that asks for the fields
+below.
 
 **Bugs** — include: what you expected, what happened, which applications were
 running, and the `requestId` from the error message. Every error response carries

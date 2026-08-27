@@ -1,0 +1,17 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Architecture decision
+    url: https://github.com/vophuocthanh/micro-frontend-architecture/tree/dev/docs/decisions
+    about: >-
+      A new remote, a different composition mechanism, or a change to how
+      remotes communicate is recorded as an ADR — open a pull request adding
+      one rather than an issue.
+  - name: Getting the platform running
+    url: https://github.com/vophuocthanh/micro-frontend-architecture/blob/dev/docs/RUNNING.md
+    about: Setup, environment files and the ports each application listens on.
+  - name: Contributing guide
+    url: https://github.com/vophuocthanh/micro-frontend-architecture/blob/dev/CONTRIBUTING.md
+    about: Where a change belongs, the quality gates, and the commit convention.
+  - name: Security issue
+    url: https://github.com/vophuocthanh/micro-frontend-architecture/security/advisories/new
+    about: Report a vulnerability privately rather than in a public issue.
