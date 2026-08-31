@@ -122,6 +122,18 @@ describe('BalanceSummary', () => {
     ]);
   });
 
+  it('hands the user off by naming an application, never a URL', async () => {
+    mockFetch({ json: () => Promise.resolve(SUMMARY) });
+    const harness = createHarness();
+    renderInShell(<BalanceSummary />, harness);
+
+    await userEvent.click(await screen.findByRole('button', { name: /Everyday Checking/ }));
+
+    // `account`, not `/banking/accounts`: where that application is mounted is
+    // the shell's runtime configuration, and this remote must not encode it.
+    expect(harness.handedOff).toEqual([{ app: 'account', subPath: '/acc_1' }]);
+  });
+
   it('sends the bearer token and identifies itself to the API', async () => {
     const fetchMock = vi
       .fn()

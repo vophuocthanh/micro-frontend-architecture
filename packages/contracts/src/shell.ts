@@ -45,6 +45,21 @@ export interface MfeMountContext {
   events: EventBus;
   /** Route ownership: the URL belongs to the shell, remotes ask for changes. */
   navigate(path: string): void;
+  /**
+   * Hands the user off to another application on the platform.
+   *
+   * `navigate()` takes a URL, which would mean the caller knowing where another
+   * application is mounted — and that is knowledge no remote is entitled to.
+   * The registry the shell resolves at runtime is the only thing that legitimately
+   * knows it, and it can be repointed between deploys.
+   *
+   * So the caller states an intent — "take the user to Transfer" — and the shell
+   * resolves the address. Moving Transfer to `/payments/send` then breaks
+   * nothing, and a remote still cannot fabricate a route into an application
+   * the user has no permission for: the shell refuses, and the outlet enforces
+   * the permission again on arrival.
+   */
+  navigateToApp(app: RemoteAppId, subPath?: string): void;
   /** Where this remote is mounted, e.g. `/banking/accounts`. */
   basePath: string;
   /** This remote's own slice of the URL, owned by the shell. */

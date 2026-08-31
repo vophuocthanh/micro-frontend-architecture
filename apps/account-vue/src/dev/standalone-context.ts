@@ -46,6 +46,11 @@ export async function createStandaloneContext(): Promise<MfeMountContext> {
       window.history.pushState({}, '', path);
       for (const listener of listeners) listener(currentSubPath());
     },
+    // Standalone runs one application, so there is nowhere to hand off to.
+    // Logging keeps the intent visible in the dev loop rather than making the
+    // button look broken.
+    navigateToApp: (app, subPath) =>
+      console.info('[navigate-to-app]', app, subPath ?? '/', '(no shell — ignored)'),
     basePath: BASE_PATH,
     apiBaseUrl: API_BASE_URL,
     locale: 'en-US',

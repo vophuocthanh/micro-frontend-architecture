@@ -15,8 +15,11 @@ const config = {
    * `pnpm install` and every build after it, long before a linter would see the
    * file. Parsing is per-file and takes milliseconds, which is the whole point
    * of running it here rather than in CI.
+   *
+   * The script picks the parser per file: strict JSON for manifests, JSONC for
+   * `tsconfig*.json`, which is allowed comments and trailing commas.
    */
-  '*.json': 'node --eval "for (const f of process.argv.slice(1)) JSON.parse(require(\'node:fs\').readFileSync(f, \'utf8\'))" --',
+  '*.json': 'node scripts/validate-json.mjs',
 };
 
 export default config;

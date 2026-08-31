@@ -20,11 +20,13 @@
   "scripts": {
     "build": "tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node scripts/write-format-markers.mjs",
     "dev": "tsc -p tsconfig.esm.json --watch",
-    "typecheck": "tsc -p tsconfig.esm.json --noEmit",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
     "clean": "rm -rf dist"
   },
   "devDependencies": {
     "@banking/config": "workspace:*",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   }
 }

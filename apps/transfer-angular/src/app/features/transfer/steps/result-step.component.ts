@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 
+import { SHELL_CONTEXT } from '../../../core/shell-context.token';
 import { MoneyPipe } from '../../../shared/money.pipe';
 import { TransferWizardStore } from '../transfer-wizard.store';
 
@@ -32,6 +33,12 @@ import { TransferWizardStore } from '../transfer-wizard.store';
         <div class="actions">
           <button type="button" class="primary" (click)="startAnother()">
             Make another transfer
+          </button>
+          <!-- The return leg of the hand-off. This component names an
+               application, never a URL, so it stays ignorant of where the
+               Account domain is mounted — or that it is written in Vue. -->
+          <button type="button" class="secondary" (click)="viewSourceAccount()">
+            View the account it came from
           </button>
         </div>
       </div>
@@ -92,6 +99,10 @@ import { TransferWizardStore } from '../transfer-wizard.store';
     }
 
     .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      justify-content: center;
       margin-top: 0.875rem;
     }
 
@@ -111,10 +122,32 @@ import { TransferWizardStore } from '../transfer-wizard.store';
       outline: 2px solid #1d4ed8;
       outline-offset: 2px;
     }
+
+    .secondary {
+      padding: 0.5rem 0.875rem;
+      font: inherit;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #1d4ed8;
+      background: #ffffff;
+      border: 1px solid #bfdbfe;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+
+    .secondary:hover {
+      background: #eff6ff;
+    }
+
+    .secondary:focus-visible {
+      outline: 2px solid #1d4ed8;
+      outline-offset: 2px;
+    }
   `,
 })
 export class ResultStepComponent {
   private readonly store = inject(TransferWizardStore);
+  private readonly shell = inject(SHELL_CONTEXT);
 
   protected readonly transfer = this.store.snapshot.result;
 
@@ -122,5 +155,20 @@ export class ResultStepComponent {
     // A reset mints a new idempotency key, so the next transfer is a genuinely
     // new one rather than a replay of the one just completed.
     this.store.reset();
+  }
+
+  /**
+   * Sends the user back to the account the money left, in the application that
+   * owns accounts.
+   *
+   * The deep sub-path is the account id, which the Account domain — and only
+   * the Account domain — knows how to interpret. This remote supplies the id it
+   * already holds and makes no assumption about the route built from it.
+   */
+  protected viewSourceAccount(): void {
+    const sourceAccountId = this.transfer?.sourceAccountId;
+    if (!sourceAccountId) return;
+
+    this.shell.navigateToApp('account', `/${sourceAccountId}`);
   }
 }

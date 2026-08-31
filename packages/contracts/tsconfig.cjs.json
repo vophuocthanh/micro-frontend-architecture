@@ -11,5 +11,7 @@
     "declaration": false,
     "declarationMap": false
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests are compiled by vitest, never shipped in `dist`.
+  "exclude": ["src/**/*.spec.ts"]
 }

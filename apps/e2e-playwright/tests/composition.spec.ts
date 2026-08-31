@@ -42,6 +42,20 @@ test.describe('runtime composition', () => {
     await expect(page.getByText('Which account should the money come from?')).toBeVisible();
   });
 
+  /**
+   * The third leg of the platform's hand-offs — React into Vue. Together with
+   * the two in `communication.spec.ts` (Vue into Angular, Angular back into
+   * Vue) it closes the loop across all three frameworks, with no application
+   * importing, or naming the URL of, any other.
+   */
+  test('an account picked in the React remote opens it in the Vue remote', async ({ page }) => {
+    await page.getByRole('button', { name: /Everyday Checking/ }).click();
+
+    await expect(page).toHaveURL(/\/banking\/accounts\/.+/);
+    // Vue answered for a deep route the React application knows nothing about.
+    await expect(page.getByText('Transaction history')).toBeVisible();
+  });
+
   test('moving between remotes unmounts the previous one', async ({ page }) => {
     const vueAccountCard = page.getByRole('button', { name: 'View Everyday Checking' });
 

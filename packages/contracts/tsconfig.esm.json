@@ -4,5 +4,7 @@
     "outDir": "dist/esm",
     "rootDir": "src"
   },
-  "include": ["src"]
+  "include": ["src"],
+  // Tests are compiled by vitest, never shipped in `dist`.
+  "exclude": ["src/**/*.spec.ts"]
 }

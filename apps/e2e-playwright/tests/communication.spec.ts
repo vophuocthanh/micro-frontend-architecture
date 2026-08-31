@@ -32,6 +32,13 @@ test('a transfer in the Angular remote refreshes the React remote', async ({ pag
   // which the toast library keeps mounted and hidden between notifications.
   await expect(page.getByText(/sent to Jordan Lee/)).toBeVisible();
 
+  // The return leg of the hand-off. Angular sends the user back into the Vue
+  // application, deep into the account the money left — naming the application
+  // rather than a URL, so neither remote encodes where the other is mounted.
+  await page.getByRole('button', { name: 'View the account it came from' }).click();
+  await expect(page).toHaveURL(/\/banking\/accounts\/.+/);
+  await expect(page.getByText('Transaction history')).toBeVisible();
+
   await page.getByRole('link', { name: 'Dashboard' }).click();
   const after = toNumber(await readTotalAssets(page));
 
@@ -40,13 +47,31 @@ test('a transfer in the Angular remote refreshes the React remote', async ({ pag
   expect(before - after).toBeCloseTo(25, 2);
 });
 
-test('an account selected in the Vue remote pre-fills the Angular wizard', async ({ page }) => {
+/**
+ * A hand-off, as opposed to navigation: one click inside the Vue application
+ * lands the user in the Angular one *and* carries the context with them.
+ *
+ * The carrying is the hard half. The publisher is unmounted before the receiver
+ * is mounted, so a fire-and-forget bus loses the message and the user arrives to
+ * an empty form — a failure that looks like the receiving application simply
+ * ignored them. `REPLAYED_EVENTS` is what closes that gap.
+ */
+test('a hand-off from the Vue remote pre-fills the Angular wizard', async ({ page }) => {
   await signIn(page, USERS.customer);
 
   await page.getByRole('link', { name: 'Accounts' }).click();
   await page.locator('button').filter({ hasText: 'Rainy Day Savings' }).first().click();
   await expect(page).toHaveURL(/\/banking\/accounts\/.+/);
 
-  await page.getByRole('link', { name: 'Transfer' }).click();
-  await expect(page.getByText('Which account should the money come from?')).toBeVisible();
+  await page.getByRole('button', { name: /Transfer from this account/ }).click();
+
+  // The shell resolved `transfer` against its registry — the Vue application
+  // never named this URL.
+  await expect(page).toHaveURL(/\/banking\/transfer$/);
+
+  // And the source step is already answered: the wizard opens on the *next*
+  // question. Asserting the negative too, because "the account was pre-filled"
+  // and "the wizard never loaded" would otherwise look the same.
+  await expect(page.getByText('Who are you sending money to?')).toBeVisible();
+  await expect(page.getByText('Which account should the money come from?')).toHaveCount(0);
 });

@@ -35,7 +35,7 @@ export function RemoteOutlet({ remote }: RemoteOutletProps) {
 
   const { user, hasPermission } = useAuth();
   const config = useRuntimeConfig();
-  const { events, navigate, createRoute } = usePlatform();
+  const { events, navigate, navigateToApp, createRoute } = usePlatform();
 
   const retry = useCallback(() => {
     setState({ status: 'loading' });
@@ -59,6 +59,7 @@ export function RemoteOutlet({ remote }: RemoteOutletProps) {
       },
       events,
       navigate,
+      navigateToApp,
       basePath: remote.basePath,
       route: createRoute(remote.basePath),
       apiBaseUrl: config.apiBaseUrl,
@@ -95,7 +96,7 @@ export function RemoteOutlet({ remote }: RemoteOutletProps) {
       element.replaceChildren();
     };
     // `attempt` is in the list so Retry re-runs the whole effect.
-  }, [remote, config, user, hasPermission, events, navigate, createRoute, attempt]);
+  }, [remote, config, user, hasPermission, events, navigate, navigateToApp, createRoute, attempt]);
 
   if (!hasPermission(remote.requiredPermission)) {
     return (

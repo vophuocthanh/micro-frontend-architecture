@@ -19,12 +19,16 @@ const ACCOUNT_ICON: Record<Account['type'], LucideIcon> = {
 /**
  * Total assets plus a per-account breakdown.
  *
- * Selecting an account publishes `account:selected` rather than navigating
- * directly: the Transfer application listens for it and pre-fills its source
- * account, and neither application has to know the other exists.
+ * Selecting an account does two things that look like one. It publishes
+ * `account:selected` — addressed to the platform, so Transfer can pre-fill its
+ * source without this file knowing Transfer exists — and it hands the user off
+ * to whichever application owns accounts, named by id rather than by URL.
+ *
+ * The event is retained by the bus, which is what makes the hand-off survive
+ * the boundary: this application is unmounted before the next one subscribes.
  */
 export function BalanceSummary() {
-  const { events } = useShell();
+  const { events, navigateToApp } = useShell();
   const { data, isPending, isError, error, refetch } = useAccountSummary();
 
   if (isPending) {
@@ -60,6 +64,7 @@ export function BalanceSummary() {
       accountNumber: account.accountNumber,
       currency: account.currency,
     });
+    navigateToApp('account', `/${account.id}`);
   };
 
   return (

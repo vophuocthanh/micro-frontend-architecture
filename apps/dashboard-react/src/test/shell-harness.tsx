@@ -17,6 +17,8 @@ const TEST_USER: AuthenticatedUser = {
 export interface Harness {
   context: MfeMountContext;
   emitted: Array<{ type: string; payload: unknown }>;
+  /** Hand-offs to another application, in the order they were requested. */
+  handedOff: Array<{ app: string; subPath: string | undefined }>;
 }
 
 /**
@@ -28,9 +30,11 @@ export interface Harness {
  */
 export function createHarness(permissions: Permission[] = TEST_USER.permissions): Harness {
   const emitted: Harness['emitted'] = [];
+  const handedOff: Harness['handedOff'] = [];
 
   return {
     emitted,
+    handedOff,
     context: {
       auth: {
         user: { ...TEST_USER, permissions },
@@ -42,6 +46,7 @@ export function createHarness(permissions: Permission[] = TEST_USER.permissions)
         onEmit: (event) => emitted.push({ type: event.type, payload: event.payload }),
       }),
       navigate: () => undefined,
+      navigateToApp: (app, subPath) => handedOff.push({ app, subPath }),
       basePath: '/banking/dashboard',
       route: { current: () => '/', subscribe: () => () => undefined },
       apiBaseUrl: 'http://api.test',

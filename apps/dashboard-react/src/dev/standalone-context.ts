@@ -36,6 +36,11 @@ export async function createStandaloneContext(): Promise<MfeMountContext> {
     },
     events: createEventBus({ source: 'dashboard', onEmit: (event) => console.info('[event]', event) }),
     navigate: (path) => console.info('[navigate]', path),
+    // Standalone runs one application, so there is nowhere to hand off to.
+    // Logging keeps the intent visible in the dev loop rather than making the
+    // button look broken.
+    navigateToApp: (app, subPath) =>
+      console.info('[navigate-to-app]', app, subPath ?? '/', '(no shell — ignored)'),
     basePath: '/banking/dashboard',
     // The Dashboard has no sub-routes; standalone mode still has to satisfy the
     // contract, so it reports a static root and never notifies.
